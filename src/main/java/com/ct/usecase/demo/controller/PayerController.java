@@ -23,6 +23,7 @@ public class PayerController {
 		this.payerPlanService = payerPlanService;
 	}
 
+	//post api
 	@PostMapping("/plans")
 	public InsurancePlanEntity createPlan(@RequestBody CreatePlanRequest request) {
 		Long payerOrgId = SecurityContextUtil.getCurrentOrgId();
