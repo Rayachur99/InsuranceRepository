@@ -3,6 +3,8 @@ package com.ct.usecase.demo.entity;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 
+import com.ct.usecase.demo.ServiceCode;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -10,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "eligibility_requests")
@@ -19,7 +22,8 @@ public class EligibilityRequestEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String serviceCode;
+    @NotNull
+    private ServiceCode serviceCode;
     private LocalDate requestDate;
 
     @ManyToOne
@@ -44,11 +48,11 @@ public class EligibilityRequestEntity {
 		this.id = id;
 	}
 
-	public String getServiceCode() {
+	public ServiceCode getServiceCode() {
 		return serviceCode;
 	}
 
-	public void setServiceCode(String serviceCode) {
+	public void setServiceCode(ServiceCode serviceCode) {
 		this.serviceCode = serviceCode;
 	}
 

@@ -10,6 +10,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.ct.usecase.demo.util.JwtAuthenticationFilter;
 import com.ct.usecase.demo.util.JwtUtil;
 
+
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -31,7 +33,8 @@ public class SecurityConfig {
 //            )
 //            .httpBasic(Customizer.withDefaults());
 
-		http.csrf(csrf -> csrf.disable())
+		http.cors(cors->{})
+		.csrf(csrf -> csrf.disable())
 		.authorizeHttpRequests(auth -> auth
 			    .requestMatchers("/auth/**").permitAll()
 			    .requestMatchers("/admin/**").hasRole("SYSTEM_ADMIN")

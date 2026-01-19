@@ -1,6 +1,17 @@
 package com.ct.usecase.demo.entity;
 
-import jakarta.persistence.*;
+import com.ct.usecase.demo.ServiceCode;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "coverage_rules")
@@ -10,7 +21,9 @@ public class CoverageRuleEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String serviceCode;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ServiceCode serviceCode;
 
     private boolean covered;
     private boolean priorAuthRequired;
@@ -34,11 +47,11 @@ public class CoverageRuleEntity {
 		this.id = id;
 	}
 
-	public String getServiceCode() {
+	public ServiceCode getServiceCode() {
 		return serviceCode;
 	}
 
-	public void setServiceCode(String serviceCode) {
+	public void setServiceCode(ServiceCode serviceCode) {
 		this.serviceCode = serviceCode;
 	}
 
