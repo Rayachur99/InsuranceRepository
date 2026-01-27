@@ -1,6 +1,6 @@
 package com.ct.usecase.demo.entity;
 
-import com.ct.usecase.demo.ServiceCode;
+import com.ct.usecase.demo.enums.ServiceCode;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,9 +12,15 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "coverage_rules")
+@Table(
+    name = "coverage_rules",
+    uniqueConstraints = @UniqueConstraint(
+        columnNames = {"plan_id", "service_code"}
+    )
+)
 public class CoverageRuleEntity {
 
     @Id
@@ -22,7 +28,7 @@ public class CoverageRuleEntity {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name="service_code", nullable = false)
     private ServiceCode serviceCode;
 
     private boolean covered;

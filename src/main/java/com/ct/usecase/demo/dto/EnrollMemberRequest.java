@@ -6,7 +6,7 @@ public record EnrollMemberRequest(
         String memberExternalId,
         String fullName,
         Integer age,
-        Long planId,
+        String planCode,
         LocalDate coverageStartDate,
         LocalDate coverageEndDate
 ) {}

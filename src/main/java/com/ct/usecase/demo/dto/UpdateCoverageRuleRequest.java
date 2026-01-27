@@ -1,9 +1,6 @@
 package com.ct.usecase.demo.dto;
 
-import com.ct.usecase.demo.enums.ServiceCode;
-
-public record CreateCoverageRuleRequest(
-        ServiceCode serviceCode,
+public record UpdateCoverageRuleRequest(
         boolean covered,
         boolean priorAuthRequired,
         Integer minAge,

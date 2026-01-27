@@ -2,7 +2,7 @@ package com.ct.usecase.demo.dto;
 
 import java.time.LocalDate;
 
-import com.ct.usecase.demo.ServiceCode;
+import com.ct.usecase.demo.enums.ServiceCode;
 
 public record EligibilityCheckRequest(
         String memberExternalId,

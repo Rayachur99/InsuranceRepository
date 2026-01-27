@@ -14,18 +14,17 @@ import com.ct.usecase.demo.util.SecurityContextUtil;
 @RequestMapping("/payer/members")
 public class PayerMemberController {
 
-    private final MemberEnrollmentService enrollmentService;
+	private final MemberEnrollmentService enrollmentService;
 
-    public PayerMemberController(MemberEnrollmentService enrollmentService) {
-        this.enrollmentService = enrollmentService;
-    }
+	public PayerMemberController(MemberEnrollmentService enrollmentService) {
+		this.enrollmentService = enrollmentService;
+	}
 
-    @PostMapping
-    public MemberEntity enrollMember(
-            @RequestBody EnrollMemberRequest request
-    ) {
-        Long payerOrgId = SecurityContextUtil.getCurrentOrgId();
-        return enrollmentService.enrollMember(payerOrgId, request);
-    }
+	@PostMapping
+	public MemberEntity enrollMember(@RequestBody EnrollMemberRequest request) {
+		Long payerOrgId = SecurityContextUtil.getCurrentOrgId();
+		return enrollmentService.enrollMember(payerOrgId, request);
+	}
+	
+	
 }
-

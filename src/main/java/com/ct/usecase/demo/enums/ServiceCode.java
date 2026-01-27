@@ -1,4 +1,4 @@
-package com.ct.usecase.demo;
+package com.ct.usecase.demo.enums;
 
 public enum ServiceCode {
 
