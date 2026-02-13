@@ -20,69 +20,51 @@ import com.ct.usecase.demo.util.EligibilityEngine;
 @Service
 public class EligibilityService {
 
-    private final MemberRepository memberRepository;
-    private final CoverageRuleRepository ruleRepository;
-    private final EligibilityRequestRepository requestRepository;
-    private final EligibilityDecisionRepository decisionRepository;
-    private final EligibilityEngine eligibilityEngine;
+	private final MemberRepository memberRepository;
+	private final CoverageRuleRepository ruleRepository;
+	private final EligibilityRequestRepository requestRepository;
+	private final EligibilityDecisionRepository decisionRepository;
+	private final EligibilityEngine eligibilityEngine;
 
-    public EligibilityService(
-            MemberRepository memberRepository,
-            CoverageRuleRepository ruleRepository,
-            EligibilityRequestRepository requestRepository,
-            EligibilityDecisionRepository decisionRepository,
-            EligibilityEngine eligibilityEngine
-    ) {
-        this.memberRepository = memberRepository;
-        this.ruleRepository = ruleRepository;
-        this.requestRepository = requestRepository;
-        this.decisionRepository = decisionRepository;
-        this.eligibilityEngine = eligibilityEngine;
-    }
+	public EligibilityService(MemberRepository memberRepository, CoverageRuleRepository ruleRepository,
+			EligibilityRequestRepository requestRepository, EligibilityDecisionRepository decisionRepository,
+			EligibilityEngine eligibilityEngine) {
+		this.memberRepository = memberRepository;
+		this.ruleRepository = ruleRepository;
+		this.requestRepository = requestRepository;
+		this.decisionRepository = decisionRepository;
+		this.eligibilityEngine = eligibilityEngine;
+	}
 
-    public EligibilityCheckResponse checkEligibility(
-            Long providerOrgId,
-            EligibilityCheckRequest request
-    ) {
+	public EligibilityCheckResponse checkEligibility(Long providerOrgId, EligibilityCheckRequest request) {
 
-        MemberEntity member = memberRepository
-                .findByMemberExternalId(request.memberExternalId())
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Member not found")
-                );
+		MemberEntity member = memberRepository.findByMemberExternalId(request.memberExternalId())
+				.orElseThrow(() -> new ResourceNotFoundException("Member not found"));
 
-        CoverageRuleEntity rule = ruleRepository
-                .findById(member.getPlan().getId())
-                .stream()
-                .filter(r -> r.getServiceCode().equals(request.serviceCode()))
-                .findFirst()
-                .orElse(null);
+		CoverageRuleEntity rule = ruleRepository
+				.findByPlan_IdAndServiceCode(member.getPlan().getId(), request.serviceCode()).orElse(null);
 
-        // Persist request
-        EligibilityRequestEntity reqEntity = new EligibilityRequestEntity();
-        reqEntity.setMember(member);
-        reqEntity.setServiceCode(request.serviceCode());
-        reqEntity.setRequestDate(request.requestDate());
-        reqEntity.setProviderOrganization(new OrganizationEntity(providerOrgId));
-        requestRepository.save(reqEntity);
+		// Persist request
+		EligibilityRequestEntity reqEntity = new EligibilityRequestEntity();
+		reqEntity.setMember(member);
+		reqEntity.setServiceCode(request.serviceCode());
+		reqEntity.setRequestDate(request.requestDate());
+		reqEntity.setProviderOrganization(new OrganizationEntity(providerOrgId));
+		requestRepository.save(reqEntity);
 
-        // Domain evaluation
-        EligibilityDecisionModel decisionModel =
-                eligibilityEngine.evaluate(member, rule, request.requestDate());
+		// Domain evaluation
+		EligibilityDecisionModel decisionModel = eligibilityEngine.evaluate(member, rule, request.requestDate());
 
-        // Persist decision
-        EligibilityDecisionEntity decisionEntity = new EligibilityDecisionEntity();
-        decisionEntity.setRequest(reqEntity);
-        decisionEntity.setEligible(decisionModel.eligible());
-        decisionEntity.setPriorAuthRequired(decisionModel.priorAuthRequired());
-        decisionEntity.setReasonCode(decisionModel.outcome().name());
-        decisionRepository.save(decisionEntity);
+		// Persist decision
+		EligibilityDecisionEntity decisionEntity = new EligibilityDecisionEntity();
+		decisionEntity.setRequest(reqEntity);
+		decisionEntity.setEligible(decisionModel.eligible());
+		decisionEntity.setPriorAuthRequired(decisionModel.priorAuthRequired());
+		decisionEntity.setReasonCode(decisionModel.outcome().name());
+		decisionRepository.save(decisionEntity);
 
-        // API response
-        return new EligibilityCheckResponse(
-                decisionModel.eligible(),
-                decisionModel.priorAuthRequired(),
-                decisionModel.outcome().name()
-        );
-    }
+		// API response
+		return new EligibilityCheckResponse(decisionModel.eligible(), decisionModel.priorAuthRequired(),
+				decisionModel.outcome().name());
+	}
 }

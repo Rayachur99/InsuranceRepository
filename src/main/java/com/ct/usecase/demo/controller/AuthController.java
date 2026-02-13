@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ct.usecase.demo.dto.LoginRequest;
 import com.ct.usecase.demo.entity.UserEntity;
+import com.ct.usecase.demo.exception.InvalidCredentialsException;
 import com.ct.usecase.demo.repository.UserRepository;
 import com.ct.usecase.demo.util.JwtUtil;
 
@@ -31,10 +32,10 @@ public class AuthController {
     public String login(@RequestBody LoginRequest request) {
 
         UserEntity user = userRepository.findByUsername(request.username())
-                .orElseThrow(() -> new RuntimeException("Invalid credentials"));
+                .orElseThrow(() -> new InvalidCredentialsException("Invalid credentials"));
 
         if (!passwordEncoder.matches(request.password(), user.getPasswordHash())) {
-            throw new RuntimeException("Invalid credentials");
+            throw new InvalidCredentialsException("Invalid credentials");
         }
 
         return jwtUtil.generateToken(

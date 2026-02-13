@@ -2,6 +2,7 @@ package com.ct.usecase.demo.exception;
 
 import java.time.Instant;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -33,6 +34,13 @@ public class GlobalExceptionHandler {
             ValidationException ex,
             HttpServletRequest request) {
         return error(HttpStatus.BAD_REQUEST, ex.getMessage(), request);
+    }
+    
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<ApiError> handleValidation(
+    		InvalidCredentialsException ex,
+            HttpServletRequest request) {
+        return error(HttpStatus.UNAUTHORIZED, ex.getMessage(), request);
     }
 
     @ExceptionHandler(BusinessException.class)
@@ -69,6 +77,21 @@ public class GlobalExceptionHandler {
             ex.getMessage(),
             request
         );
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<?> handleDataIntegrityViolation(
+            DataIntegrityViolationException ex,
+            HttpServletRequest request) {
+
+        String message = "Resource already exists";
+
+        if (ex.getRootCause() != null &&
+            ex.getRootCause().getMessage().contains("username")) {
+            message = "Username already exists for this organization";
+        }
+
+        throw new ConflictException(message);
     }
 
 

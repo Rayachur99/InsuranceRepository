@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -91,11 +92,14 @@ public class PayerPlanService {
 	public List<CoverageRuleEntity> addCoverageRulesBulk(
 	        Long payerOrgId,
 	        String planCode,
-	        CreateCoverageRuleBulkRequest bulkRequest) throws ConflictException {
+	        CreateCoverageRuleBulkRequest bulkRequest) throws ConflictException, NotFoundException {
 
-	    InsurancePlanEntity plan = planRepository
-	            .findByPlanCodeAndPayerOrganization_Id(planCode, payerOrgId)
-	            .orElseThrow(() -> new ResourceNotFoundException("Plan not found"));
+		InsurancePlanEntity plan =
+			    planRepository
+			        .findByPlanCodeAndPayerOrganization_Id(planCode, payerOrgId)
+			        .orElseThrow(() ->
+			            new ResourceNotFoundException("Plan " + planCode + " not found"));
+
 
 	    Set<ServiceCode> existingServices =
 	            ruleRepository.findByPlan_Id(plan.getId()).stream()
@@ -131,11 +135,14 @@ public class PayerPlanService {
 	        Long payerOrgId,
 	        String planCode,
 	        ServiceCode serviceCode,
-	        UpdateCoverageRuleRequest request) {
+	        UpdateCoverageRuleRequest request) throws NotFoundException {
 
-	    InsurancePlanEntity plan = planRepository
-	            .findByPlanCodeAndPayerOrganization_Id(planCode, payerOrgId)
-	            .orElseThrow(() -> new ResourceNotFoundException("Plan not found"));
+		InsurancePlanEntity plan =
+			    planRepository
+			        .findByPlanCodeAndPayerOrganization_Id(planCode, payerOrgId)
+			        .orElseThrow(() ->
+		            new ResourceNotFoundException("Plan " + planCode + " not found"));
+
 
 	    CoverageRuleEntity rule = ruleRepository
 	            .findByPlan_IdAndServiceCode(plan.getId(), serviceCode)
@@ -153,7 +160,15 @@ public class PayerPlanService {
 
 	    return ruleRepository.save(rule);
 	}
-
-
-
+	
+	public List<CoverageRuleEntity> getCoverageRules(
+	        Long orgId,
+	        String planCode
+	) throws NotFoundException {
+	    InsurancePlanEntity plan = planRepository
+	            .findByPlanCodeAndPayerOrganization_Id(planCode, orgId)
+	            .orElseThrow(() ->
+	            new ResourceNotFoundException("Plan " + planCode + " not found"));
+	    return ruleRepository.findByPlan(plan);
+	}
 }
