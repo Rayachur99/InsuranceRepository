@@ -7,14 +7,13 @@ spring:
 
   datasource:
     url: jdbc:postgresql://localhost:5432/insurance_db
-    username: postgres
-    password: admin
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:admin}
     driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
-      ddl-auto: update   # for local/dev only
-    show-sql: true
+      ddl-auto: update
     properties:
       hibernate:
         format_sql: true
@@ -26,5 +25,8 @@ spring:
 
 logging:
   level:
-    org.hibernate.SQL: debug
-    org.hibernate.orm.jdbc.bind: trace
+    root: INFO
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: DEBUG
+    org.springframework.web: INFO
+    com.ct.usecase.demo: INFO

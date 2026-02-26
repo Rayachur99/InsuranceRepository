@@ -1,5 +1,7 @@
 package com.ct.usecase.demo.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,11 +22,24 @@ public class PayerMemberController {
 		this.enrollmentService = enrollmentService;
 	}
 
+	private static final Logger log = LoggerFactory.getLogger(PayerMemberController.class);
+
 	@PostMapping
 	public MemberEntity enrollMember(@RequestBody EnrollMemberRequest request) {
-		Long payerOrgId = SecurityContextUtil.getCurrentOrgId();
-		return enrollmentService.enrollMember(payerOrgId, request);
+
+	    Long payerOrgId = SecurityContextUtil.getCurrentOrgId();
+
+	    log.info("Member enrollment request received. orgId={}, memberId={}",
+	            payerOrgId, request.memberExternalId());
+
+	    MemberEntity member = enrollmentService.enrollMember(payerOrgId, request);
+
+	    log.info("Member enrolled successfully. orgId={}, memberId={}",
+	            payerOrgId, request.memberExternalId());
+
+	    return member;
 	}
+
 	
 	
 }
